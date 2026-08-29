@@ -1,0 +1,15 @@
+[Unit]
+Description=TETRA RSSI visualizer
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/tetra-pi/start.sh
+WorkingDirectory=/opt/tetra-pi
+Restart=on-failure
+RestartSec=5
+User=root
+Environment=TETRA_PPM=0
+
+[Install]
+WantedBy=multi-user.target

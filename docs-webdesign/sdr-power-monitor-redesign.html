@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SDR Power Monitor - Redesign</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #050607;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  .phone {
+    width: 360px;
+    background: #0b0d10;
+    border-radius: 28px;
+    padding: 18px;
+    color: #e8eaed;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+  }
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #f2f3f4;
+  }
+  .settings-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #181b1f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .settings-btn svg {
+    width: 18px;
+    height: 18px;
+    stroke: #8b9198;
+  }
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 14px;
+    background: #14171b;
+    border-radius: 10px;
+    padding: 4px;
+  }
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 8px 0;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #8b9198;
+  }
+  .tab.active {
+    background: #22262b;
+    font-weight: 600;
+    color: #f2f3f4;
+  }
+  .card {
+    background: #14171b;
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .card:last-child { margin-bottom: 0; padding-bottom: 8px; }
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #c8cbcf;
+    margin-bottom: 12px;
+  }
+  .segment-bar {
+    display: flex;
+    gap: 4px;
+    height: 28px;
+  }
+  .segment {
+    flex: 1;
+    border-radius: 4px;
+    background: #22262b;
+  }
+  .segment.active {
+    background: #639922;
+  }
+  .legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 0.5px solid #22262b;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .legend-swatch {
+    width: 10px;
+    height: 2px;
+  }
+  .legend-item span {
+    font-size: 11px;
+    color: #8b9198;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <div class="header">
+    <div class="title">SDR Power Monitor</div>
+    <div class="settings-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active">Monitoring</div>
+    <div class="tab">Device info</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Cumulated dBm monitoring</div>
+    <div class="segment-bar">
+      <div class="segment active"></div>
+      <div class="segment active"></div>
+      <div class="segment active"></div>
+      <div class="segment"></div>
+      <div class="segment"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Peak dBm level p/s</div>
+    <svg viewBox="0 0 340 150" style="width:100%;height:150px;overflow:visible;">
+      <line x1="0" y1="15" x2="340" y2="15" stroke="#22262b" stroke-width="1"/>
+      <line x1="0" y1="65" x2="340" y2="65" stroke="#22262b" stroke-width="1"/>
+      <line x1="0" y1="115" x2="340" y2="115" stroke="#22262b" stroke-width="1"/>
+      <text x="0" y="11" font-size="10" fill="#5a5f66">100</text>
+      <text x="0" y="61" font-size="10" fill="#5a5f66">50</text>
+      <text x="4" y="111" font-size="10" fill="#5a5f66">0</text>
+      <text x="0" y="140" font-size="10" fill="#5a5f66">-50</text>
+      <polyline fill="none" stroke="#378ADD" stroke-width="1.6" points="0,135 20,136 40,134 60,135 80,110 100,136 120,135 140,134 160,136 180,135 200,135 220,134 240,135 260,136 280,135 300,134 320,135 340,135"/>
+      <polyline fill="none" stroke="#EF9F27" stroke-width="1.6" points="0,138 20,137 40,138 60,139 80,138 100,137 120,138 140,139 160,138 180,137 200,138 220,139 240,138 260,137 280,138 300,139 320,138 340,138"/>
+      <circle cx="80" cy="110" r="3" fill="#378ADD"/>
+    </svg>
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#378ADD;"></div>
+        <span>380.000 - 382.500 MHz</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#EF9F27;"></div>
+        <span>382.500 - 385.000 MHz</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
